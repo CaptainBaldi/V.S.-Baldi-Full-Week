@@ -380,7 +380,7 @@ class ModchartState
 	
 				setVar("difficulty", PlayState.storyDifficulty);
 				setVar("bpm", Conductor.bpm);
-				setVar("scrollspeed", PlayState.SONG.speed);
+				setVar("scrollspeed", FlxG.save.data.scrollSpeed != 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed);
 				setVar("fpsCap", FlxG.save.data.fpsCap);
 				setVar("downscroll", FlxG.save.data.downscroll);
 				setVar("flashing", FlxG.save.data.flashing);
@@ -437,8 +437,6 @@ class ModchartState
 					PlayState.instance.removeObject(sprite);
 					return true;
 				});
-
-				
 	
 				// hud/camera
 
@@ -459,6 +457,14 @@ class ModchartState
 				
 				Lua_helper.add_callback(lua,"restartVideo", function() {
 					GlobalVideo.get().restart();
+				});
+
+				Lua_helper.add_callback(lua,"getVideoSpriteX", function() {
+					return PlayState.instance.videoSprite.x;
+				});
+
+				Lua_helper.add_callback(lua,"getVideoSpriteY", function() {
+					return PlayState.instance.videoSprite.y;
 				});
 
 				Lua_helper.add_callback(lua,"setVideoSpritePos", function(x:Int,y:Int) {
