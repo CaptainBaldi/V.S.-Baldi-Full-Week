@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.gamepad.FlxGamepad;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import openfl.Lib;
@@ -57,6 +58,8 @@ class OptionsMenu extends MusicBeatState
 			#end
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
+			new ShowInput("Display every single input in the score screen."),
+			new Optimization("No backgrounds, no characters, centered notes, no player 2."),
 			new BotPlay("Showcase your charts and mods with autoplay."),
 			new ScoreScreen("Show the score screen after the end of a song")
 		]),
@@ -148,9 +151,26 @@ class OptionsMenu extends MusicBeatState
 				
 				changeSelection(curSelected);
 			}
-			if (controls.UP_P)
+
+			var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
+			if (gamepad != null)
+			{
+				if (gamepad.justPressed.DPAD_UP)
+				{
+					FlxG.sound.play(Paths.sound('scrollMenu'));
+					changeSelection(-1);
+				}
+				if (gamepad.justPressed.DPAD_DOWN)
+				{
+					FlxG.sound.play(Paths.sound('scrollMenu'));
+					changeSelection(1);
+				}
+			}
+			
+			if (FlxG.keys.justPressed.UP)
 				changeSelection(-1);
-			if (controls.DOWN_P)
+			if (FlxG.keys.justPressed.DOWN)
 				changeSelection(1);
 			
 			if (isCat)
@@ -219,10 +239,8 @@ class OptionsMenu extends MusicBeatState
 				if (isCat)
 				{
 					if (currentSelectedCat.getOptions()[curSelected].press()) {
-						grpControls.remove(grpControls.members[curSelected]);
-						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, currentSelectedCat.getOptions()[curSelected].getDisplay(), true, false);
-						ctrl.isMenuItem = true;
-						grpControls.add(ctrl);
+						grpControls.members[curSelected].reType(currentSelectedCat.getOptions()[curSelected].getDisplay());
+						trace(currentSelectedCat.getOptions()[curSelected].getDisplay());
 					}
 				}
 				else
@@ -241,7 +259,7 @@ class OptionsMenu extends MusicBeatState
 					curSelected = 0;
 				}
 				
-				changeSelection(curSelected);
+				changeSelection();
 			}
 		}
 		FlxG.save.flush();
